@@ -61,7 +61,7 @@ export class Neo4jPlayerRepository implements IPlayerRepository {
     }
     async findByName(name: string): Promise<Player | null> {
         const query = `MATCH (p:Player {name: $name} RETURN p)`;
-        const result = await runQuery(query)
+        const result = await runQuery(query, { name })
         if (result.records.length === 0) {
             return null;
         }

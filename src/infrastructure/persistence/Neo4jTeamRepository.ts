@@ -1,17 +1,39 @@
 import { runQuery } from "./connection";
 import { ITeamRepository } from "../../domain/repositories/ITeamRepository";
 import { Team } from "../../domain/entities/Team";
+import { IFilterTeam } from "../../domain/repositories/IFilters";
 
 export class Neo4jTeamRepository implements ITeamRepository {
-    async findAll() {
-        const query = 'MATCH (t:Team) RETURN t';
-        const result = await runQuery(query);
-        return result.records.map(record => record.get('t').properties);
+    async findAll(filters: IFilterTeam): Promise<Team[]> {
+        // Build conditions dynamically based on provided filters
+        const conditions = Object.entries(filters)
+            .filter(([_, value]) => value !== undefined)
+            .map(([key, _]) => `t.${key} = $${key}`)
+            .join(' AND ');
+
+        const query = `
+        MATCH (t:Team)
+        ${conditions ? `WHERE ${conditions}` : ''}
+        RETURN t
+    `;
+
+        const result = await runQuery(query, filters);
+        return result.records.map(record => {
+            const node = record.get('t');
+            return new Team(
+                node.properties.id,
+                node.properties.name,
+                node.properties.city,
+                node.properties.country,
+                node.properties.stadium
+            );
+        });
     }
 
-    async findByName(name: string) {
-        const query = 'MATCH (t:Team {name: $name}) RETURN t';
-        const result = await runQuery(query, { name });
+
+    async findById(id: string): Promise<Team | null> {
+        const query = `MATCH (t: Team {id: $id} return t)`
+        const result = await runQuery(query, { id })
         if (result.records.length === 0) {
             return null;
         }

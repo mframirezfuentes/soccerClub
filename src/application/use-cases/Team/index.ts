@@ -1,8 +1,14 @@
 import { ListTeamsUseCase } from "./ListTeamUseCase";
-import { FindByTeamUseCase } from "./FindByTeamUseCase";
 import { UpdateTeamUseCase } from './UpdateUseCases'
 import { DeleteTeamUseCase } from "./DeleteTeamUseCase"
+import { FindByIdTeamUseCase } from "./FindByIdTeamUseCase";
+import { CreateTeamUseCase } from './CreateTeamUseCase'
+
 
 export {
-    ListTeamsUseCase, FindByTeamUseCase, DeleteTeamUseCase, UpdateTeamUseCase
+    CreateTeamUseCase,
+    ListTeamsUseCase,
+    DeleteTeamUseCase,
+    UpdateTeamUseCase,
+    FindByIdTeamUseCase
 }

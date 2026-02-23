@@ -1,15 +1,13 @@
 import { Team } from "../../../domain/entities/Team";
 import { Neo4jTeamRepository } from "../../../infrastructure/persistence/Neo4jTeamRepository";
+import { IFilterTeam } from "../../../domain/repositories/IFilters";
 
 export class ListTeamsUseCase {
-    constructor(private readonly teamRepository: Neo4jTeamRepository) {}
+    constructor(private readonly teamRepository: Neo4jTeamRepository) { }
 
-    async execute(teamName?: string): Promise<Team[]> {
-        if (teamName) {
-            const team = await this.teamRepository.findByName(teamName);
-            return team ? [team] : [];
-        }
-        return await this.teamRepository.findAll();
+    async execute(filters: IFilterTeam): Promise<Team[]> {
+        return await this.teamRepository.findAll(filters);
+
 
     }
 }

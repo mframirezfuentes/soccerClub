@@ -4,14 +4,14 @@ import { Team } from "../../../domain/entities/Team";
 export class UpdateTeamUseCase {
     constructor(private readonly teamRepository: Neo4jTeamRepository) { }
 
-    async execute(teamName: string, teamData: Partial<Team>): Promise<Team | null> {
-        const existingTeam = await this.teamRepository.findByName(teamName);
+    async execute(id: string, teamData: Partial<Team>): Promise<Team | null> {
+        const existingTeam = await this.teamRepository.findById(id);
         if (!existingTeam) {
             return null;
         }
 
         const updatedTeam = { ...existingTeam, ...teamData };
-        await this.teamRepository.update(teamName, updatedTeam);
-        return updatedTeam;
+        return await this.teamRepository.update(id, updatedTeam);
+
     }
 }
