@@ -80,9 +80,9 @@ export class Neo4jPlayerRepository implements IPlayerRepository {
 
     }
 
-    async delete(id: string): Promise<void> {
-        const query = `MATCH (p:Player {id:$id}  DETACH DELETE p)`
-        await runQuery(query, { id })
+    async delete(name: string): Promise<void> {
+        const query = `MATCH (p:Player {name:$name})  DETACH DELETE p`
+        await runQuery(query, { name })
 
     }
 };
