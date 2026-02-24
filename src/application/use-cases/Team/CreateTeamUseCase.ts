@@ -1,9 +1,9 @@
 import { ResultSummary } from "neo4j-driver";
 import { Team } from "../../../domain/entities/Team";
-import { Neo4jTeamRepository } from "../../../infrastructure/persistence";
+import { ITeamRepository } from "../../../domain/repositories/ITeamRepository";
 
 export class CreateTeamUseCase {
-    constructor(private readonly teamRepository: Neo4jTeamRepository) { }
+    constructor(private readonly teamRepository: ITeamRepository) { }
 
     async execute(team: Team): Promise<Team> {
         const result = await this.teamRepository.create(team);

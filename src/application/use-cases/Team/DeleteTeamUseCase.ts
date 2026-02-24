@@ -1,7 +1,7 @@
-import { Neo4jTeamRepository } from "../../../infrastructure/persistence";
+import { ITeamRepository } from "../../../domain/repositories/ITeamRepository";
 
 export class DeleteTeamUseCase {
-    constructor(private readonly teamRepository: Neo4jTeamRepository) { }
+    constructor(private readonly teamRepository: ITeamRepository) { }
 
     async execute(id: string): Promise<void> {
         await this.teamRepository.delete(id);

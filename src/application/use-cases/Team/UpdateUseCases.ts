@@ -1,8 +1,8 @@
-import { Neo4jTeamRepository } from "../../../infrastructure/persistence";
 import { Team } from "../../../domain/entities/Team";
+import { ITeamRepository } from "../../../domain/repositories/ITeamRepository";
 
 export class UpdateTeamUseCase {
-    constructor(private readonly teamRepository: Neo4jTeamRepository) { }
+    constructor(private readonly teamRepository: ITeamRepository) { }
 
     async execute(id: string, teamData: Partial<Team>): Promise<Team | null> {
         const existingTeam = await this.teamRepository.findById(id);
