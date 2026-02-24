@@ -9,6 +9,6 @@ export const teamRouter = (controller: TeamController): Router => {
     router.get("/:id", (req, res) => controller.findById(req, res));
     router.post("/", validateBodyTeam(teamSchema), (req, res) => controller.save(req, res));
     router.put("/:name", validateBodyTeam(teamSchema), (req, res) => controller.save(req, res));
-
+    router.delete("/:id", (req, res) => controller.delete(req, res))
     return router;
 }
