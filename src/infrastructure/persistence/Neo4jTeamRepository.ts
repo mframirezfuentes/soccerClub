@@ -32,17 +32,32 @@ export class Neo4jTeamRepository implements ITeamRepository {
 
 
     async findById(id: string): Promise<Team | null> {
-        const query = `MATCH (t: Team {id: $id} return t)`
+        const query = `MATCH (t:Team {id: $id}) return t`
         const result = await runQuery(query, { id })
         if (result.records.length === 0) {
             return null;
         }
-        return result.records[0].get('t').properties;
+        const node = result.records[0].get('t');
+        return new Team(
+            node.properties.id,
+            node.properties.name,
+            node.properties.city,
+            node.properties.country,
+            node.properties.stadium)
+
     }
 
     async create(team: Team) {
-        const query = 'CREATE (t:Team {id: $id, name: $name, city: $city, country: $country}) RETURN t';
-        const result = await runQuery(query, { id: team.getId(), name: team.getName(), city: team.getCity(), country: team.getCountry() });
+        const query = 'CREATE (t:Team {id: $id, name: $name, city: $city, country: $country, stadium:$stadium}) RETURN t';
+        const result = await runQuery(
+            query,
+            {
+                id: team.getId(),
+                name: team.getName(),
+                city: team.getCity(),
+                country: team.getCountry(),
+                stadium: team.getStadium()
+            });
         return result.records[0].get('t').properties;
     }
 

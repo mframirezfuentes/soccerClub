@@ -1,4 +1,3 @@
-import { ResultSummary } from "neo4j-driver";
 import { Team } from "../../../domain/entities/Team";
 import { ITeamRepository } from "../../../domain/repositories/ITeamRepository";
 

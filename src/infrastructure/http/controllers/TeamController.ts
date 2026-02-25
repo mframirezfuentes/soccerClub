@@ -1,4 +1,6 @@
 import { Request, Response } from 'express';
+import { v4 as uuidv4 } from 'uuid';
+import { Team } from '../../../domain/entities/Team';
 import {
     ListTeamsUseCase,
     DeleteTeamUseCase,
@@ -13,13 +15,7 @@ export class TeamController {
         private readonly listTeamsUseCase: ListTeamsUseCase,
         private readonly findByIdTeamUseCase: FindByIdTeamUseCase,
         private readonly deleteTeamUseCase: DeleteTeamUseCase,
-        private readonly updateTeamUseCase: UpdateTeamUseCase) {
-
-        this.createTeamUseCase = createTeamUseCase;
-        this.listTeamsUseCase = listTeamsUseCase;
-        this.deleteTeamUseCase = deleteTeamUseCase;
-        this.findByIdTeamUseCase = findByIdTeamUseCase;
-    }
+        private readonly updateTeamUseCase: UpdateTeamUseCase) { }
     async findAll(req: Request, res: Response): Promise<void> {
         try {
             const { name, city, country, stadium } = req.query;
@@ -39,7 +35,6 @@ export class TeamController {
     }
 
     async findById(req: Request, res: Response): Promise<void> {
-        console.log("find by id:", req.params.id)
         try {
             const teamId = req.params.id.toString();
 
@@ -56,13 +51,15 @@ export class TeamController {
 
     async save(req: Request, res: Response): Promise<void> {
         try {
-            const teamData = req.body;
-            const result = await this.createTeamUseCase.execute(teamData);
-            if (result) {
-                res.status(400).json({ error: 'Team already exists' });
+            const { name, city, country, stadium } = req.body;
+            const result = await this.listTeamsUseCase.execute({ name });
+            if (result.length > 0) {
+                res.status(400).json({ error: `Team ${name} already exists` });
                 return;
             }
-            res.status(201).json({ message: 'created successfully' })
+            const team = new Team(uuidv4(), name, city, country, stadium);
+            await this.createTeamUseCase.execute(team);
+            res.status(201).json({ message: `Team ${name} created successfully` });
         } catch (error) {
             res.status(500).json({ error: 'Internal server error' });
         }
@@ -79,7 +76,7 @@ export class TeamController {
                 return;
             }
 
-            res.status(200).json(result);
+            res.status(200).json(`Team ${teamName} updated modificate successfully `);
         } catch (error) {
             res.status(500).json({ error: 'Internal server error' });
         }
@@ -88,8 +85,8 @@ export class TeamController {
     async delete(req: Request, res: Response): Promise<void> {
         try {
             const id = req.params.id;
-            const result = await this.deleteTeamUseCase.execute(id.toString())
-            res.status(200).json(result)
+            await this.deleteTeamUseCase.execute(id.toString())
+            res.status(200).json(`Team delete successfully`)
 
         } catch (error) {
             res.status(500).json({ error: 'Internal server error' });

@@ -60,7 +60,7 @@ export class Neo4jPlayerRepository implements IPlayerRepository {
         );
     }
     async findByName(name: string): Promise<Player | null> {
-        const query = `MATCH (p:Player {name: $name} RETURN p)`;
+        const query = `MATCH (p:Player {name: $name}) RETURN p`;
         const result = await runQuery(query, { name })
         if (result.records.length === 0) {
             return null;
@@ -70,8 +70,8 @@ export class Neo4jPlayerRepository implements IPlayerRepository {
             node.properties.id,
             node.properties.name,
             node.properties.age.toInt(),
-            node.propertie.position,
-            node.propertie.teamId,
+            node.properties.position,
+            node.properties.teamId,
             node.properties.country
         )
     }
