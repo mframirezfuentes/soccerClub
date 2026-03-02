@@ -1,7 +1,7 @@
 import { runQuery } from "./connection";
 import { ITeamRepository } from "../../domain/repositories/ITeamRepository";
 import { Team } from "../../domain/entities/Team";
-import { IFilterTeam } from "../../domain/repositories/IFilters";
+import { IFilterTeam } from "../../domain/repositories/IFiltersTeam";
 
 export class Neo4jTeamRepository implements ITeamRepository {
     async findAll(filters: IFilterTeam): Promise<Team[]> {

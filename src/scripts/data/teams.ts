@@ -21,4 +21,5 @@ export const teamsData: ITeam[] = [
     { name: "Borussia Dortmund", city: "Dortmund", country: "Germany", stadium: "Signal Iduna Park" },
     { name: "Paris Saint-Germain", city: "Paris", country: "France", stadium: "Parc des Princes" },
     { name: "Lyon", city: "Lyon", country: "France", stadium: "Groupama Stadium" },
+    { name: "Everton", city: "Liverpool", country: "England", stadium: "Goodison Park" },
 ];

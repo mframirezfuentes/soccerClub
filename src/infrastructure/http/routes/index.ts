@@ -11,8 +11,8 @@ interface Controllers {
 export const createRoutes = (controllers: Controllers): Router => {
     const router = Router();
 
-    router.use('/team', teamRouter(controllers.teamController));
-    router.use('/player', playerRouter(controllers.playerController));
+    router.use('/teams', teamRouter(controllers.teamController));
+    router.use('/players', playerRouter(controllers.playerController));
 
     return router;
 }

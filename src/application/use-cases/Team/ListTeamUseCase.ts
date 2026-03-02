@@ -1,5 +1,5 @@
 import { Team } from "../../../domain/entities/Team";
-import { IFilterTeam } from "../../../domain/repositories/IFilters";
+import { IFilterTeam } from "../../../domain/repositories/IFiltersTeam";
 import { ITeamRepository } from "../../../domain/repositories/ITeamRepository";
 
 export class ListTeamsUseCase {

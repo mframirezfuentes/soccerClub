@@ -67,16 +67,17 @@ export class TeamController {
 
     async update(req: Request, res: Response): Promise<void> {
         try {
-            const teamName = req.params.name.toString();
+            const teamId = req.params.id as string;
+
             const teamData = req.body;
-            const result = await this.updateTeamUseCase.execute(teamName, teamData);
+            const result = await this.updateTeamUseCase.execute(teamId, teamData);
 
             if (!result) {
                 res.status(404).json({ error: 'Team not found' });
                 return;
             }
 
-            res.status(200).json(`Team ${teamName} updated modificate successfully `);
+            res.status(200).json(`Team ${teamId} updated modificate successfully `);
         } catch (error) {
             res.status(500).json({ error: 'Internal server error' });
         }

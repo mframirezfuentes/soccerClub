@@ -1,18 +1,20 @@
 import { runQuery } from "./connection";
+import { int } from 'neo4j-driver'
 import { Player } from "../../domain/entities/Player";
+import { IFilterPlayer } from "../../domain/repositories/IFilterPlayer";
 import { IPlayerRepository } from "../../domain/repositories/IPlayerRepository";
 
 export class Neo4jPlayerRepository implements IPlayerRepository {
     async save(player: Player): Promise<void> {
         const query = `
-            MATCH (t:Team {id: $teamId})
+            MATCH (t:Team {name: $teamId})
             CREATE (p:Player {id: $id, name: $name, age: $age, position: $position, teamId: $teamId, country: $country})
             CREATE (p)-[:PLAYS_FOR]->(t)
         `;
         const params = {
             id: player.getId(),
             name: player.getName(),
-            age: player.getAge(),
+            age: int(player.getAge()),
             position: player.getPosition(),
             teamId: player.getTeamId(),
             country: player.getCountry()
@@ -21,18 +23,31 @@ export class Neo4jPlayerRepository implements IPlayerRepository {
 
     }
 
-    async findAll(): Promise<Player[]> {
+    async findAll(filters: IFilterPlayer): Promise<Player[]> {
+        console.log("Filters received:", JSON.stringify(filters))
+        const validEntries = Object.entries(filters)
+            .filter(([_, value]) => value !== undefined)
+        const conditions = validEntries
+            .map(([key, _]) => `p.${key} = $${key}`)
+            .join(' AND ');
+
+        const params = Object.fromEntries(
+            validEntries.map(([key, value]) => [key, key === 'age' ? int(value as number) : value])
+        )
+
         const query = `
             MATCH (p:Player)
+            ${conditions ? `WHERE ${conditions}` : ''}
             RETURN p
         `;
-        const result = await runQuery(query);
+
+        const result = await runQuery(query, params);
         return result.records.map(record => {
             const node = record.get('p');
             return new Player(
                 node.properties.id,
                 node.properties.name,
-                node.properties.age.toInt(),
+                node.properties.age,
                 node.properties.position,
                 node.properties.teamId,
                 node.properties.country
@@ -69,12 +84,13 @@ export class Neo4jPlayerRepository implements IPlayerRepository {
         return new Player(
             node.properties.id,
             node.properties.name,
-            node.properties.age.toInt(),
+            node.properties.age,
             node.properties.position,
             node.properties.teamId,
             node.properties.country
         )
     }
+
 
     async update(id: string, player: Player): Promise<void> {
 

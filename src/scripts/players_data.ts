@@ -11,19 +11,29 @@ async function main() {
 
     let success = 0;
     let failed = 0;
+    let skipped = 0;
 
     for (const playerData of playersData) {
         try {
-            const exists = await playerRepository.findById(playerData.name);
+            const exists = await playerRepository.findByName(playerData.name);
             if (exists) {
                 console.log(`  ⏭️  ${playerData.name} already exists, skipping...`);
+                skipped++;
                 continue;
             }
 
             const player = new Player(uuidv4(), playerData.name, playerData.age, playerData.position, playerData.teamId, playerData.country);
             await playerRepository.save(player);
-            console.log(`  ✅ ${playerData.name} saved successfully`);
-            success++;
+            // ✅ Verify the player was actually saved in Neo4j
+            const saved = await playerRepository.findByName(playerData.name);
+            if (saved) {
+                console.log(`  ✅ ${playerData.name} saved and verified`);
+                success++;
+            } else {
+                // Saved without error but not found — likely a MATCH issue (teamId, etc.)
+                console.warn(`  ⚠️  ${playerData.name} — no error but not found in Neo4j. Check teamId: "${playerData.teamId}"`);
+                failed++;
+            }
         } catch (error) {
             console.error(`  ❌ Failed to save ${playerData.name}:`, error);
             failed++;
@@ -32,8 +42,10 @@ async function main() {
 
     // Summary
     console.log(`\n📊 Summary:`);
-    console.log(`  Saved:  ${success}`);
-    console.log(`  Failed: ${failed}`);
+    console.log(`  Saved:    ${success}`);
+    console.log(`  Skipped:  ${skipped}`);
+    console.log(`  Failed:   ${failed}`);
+
 
     // Always close the driver to avoid hanging processes
     await closeDriver();

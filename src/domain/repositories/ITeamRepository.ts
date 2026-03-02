@@ -1,5 +1,5 @@
 import { Team } from "../entities/Team";
-import { IFilterTeam } from './IFilters'
+import { IFilterTeam } from './IFiltersTeam'
 
 export interface ITeamRepository {
 

@@ -13,7 +13,7 @@
     "start": " node build/index.js src/infrastructure/server.ts",
     "dev": "tsx watch src/infrastructure/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "load:team": "tsx ./src/scripts/team_data.ts",
+    "load:teams": "tsx ./src/scripts/team_data.ts",
     "delete:teams":"tsx ./src/scripts/delete_team",
     "load:players": "tsx ./src/scripts/players_data.ts",
     "delete:players":"tsx ./src/scripts/delete_players",

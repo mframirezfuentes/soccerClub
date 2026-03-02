@@ -1,10 +1,10 @@
 import { Player } from '../entities/Player';
+import { IFilterPlayer } from './IFilterPlayer';
 
 export interface IPlayerRepository {
     save(player: Player): Promise<void>;
-    findAll(): Promise<Player[]>;
-    findById(id: string): Promise<Player | null>;
-    findByName(name: string): Promise<Player | null>;
+    findAll(filters?: IFilterPlayer): Promise<Player[]>;
     update(id: string, player: Player): Promise<void>
     delete(id: string): Promise<void>;
+    findByName(name: string): Promise<Player | null>;
 }
