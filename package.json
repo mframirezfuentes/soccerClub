@@ -12,11 +12,12 @@
     "build": "tsc",
     "start": " node build/index.js src/infrastructure/server.ts",
     "dev": "tsx watch src/infrastructure/server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "load:teams": "tsx ./src/scripts/team_data.ts",
-    "delete:teams":"tsx ./src/scripts/delete_team",
+    "delete:teams": "tsx ./src/scripts/delete_team",
     "load:players": "tsx ./src/scripts/players_data.ts",
-    "delete:players":"tsx ./src/scripts/delete_players",
+    "delete:players": "tsx ./src/scripts/delete_players",
     "clean": "rimraf build"
   },
   "ts-node": {
@@ -40,6 +41,7 @@
     "rimraf": "^6.1.3",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   }
 }
