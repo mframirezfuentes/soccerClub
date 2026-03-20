@@ -15,6 +15,7 @@ export class Neo4jTeamRepository implements ITeamRepository {
         MATCH (t:Team)
         ${conditions ? `WHERE ${conditions}` : ''}
         RETURN t
+        ORDER BY t.name ASC
     `;
 
         const result = await runQuery(query, filters);

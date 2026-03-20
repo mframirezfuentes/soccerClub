@@ -6,8 +6,8 @@ interface ITeam {
 }
 
 export const teamsData: ITeam[] = [
-    { name: "Arsenal", city: "London", country: "England", stadium: "Emirates Stadium" },
-    { name: "Chelsea", city: "London", country: "England", stadium: "Stamford Bridge" },
+    { name: "Arsenal Women's", city: "London", country: "England", stadium: "Emirates Stadium" },
+    { name: "Chelsea Women's", city: "London", country: "England", stadium: "Stamford Bridge" },
     { name: "Manchester United", city: "Manchester", country: "England", stadium: "Old Trafford" },
     { name: "Manchester City", city: "Manchester", country: "England", stadium: "Etihad Stadium" },
     { name: "Liverpool", city: "Liverpool", country: "England", stadium: "Anfield" },
@@ -22,4 +22,5 @@ export const teamsData: ITeam[] = [
     { name: "Paris Saint-Germain", city: "Paris", country: "France", stadium: "Parc des Princes" },
     { name: "Lyon", city: "Lyon", country: "France", stadium: "Groupama Stadium" },
     { name: "Everton", city: "Liverpool", country: "England", stadium: "Goodison Park" },
+    { name: "Fiorentina", city: "Florencia", country: "Italy", stadium: "" }
 ];
