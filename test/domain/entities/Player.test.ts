@@ -6,10 +6,9 @@ describe('Player Entity', () => {
   const name = 'Cristiano Ronaldo';
   const age = 39;
   const position = 'Forward';
-  const teamId = 'team-abc';
   const country = 'Portugal';
 
-  const player = new Player(id, name, age, position, teamId, country);
+  const player = new Player(id, name, age, position, country);
 
   it('should store and return the id', () => {
     expect(player.getId()).toBe(id);
@@ -28,17 +27,14 @@ describe('Player Entity', () => {
     expect(player.getPosition()).toBe(position);
   });
 
-  it('should store and return the teamId', () => {
-    expect(player.getTeamId()).toBe(teamId);
-  });
 
   it('should store and return the country', () => {
     expect(player.getCountry()).toBe(country);
   });
 
   it('should create two independent instances', () => {
-    const playerA = new Player('p1', 'Messi', 37, 'Forward', 'team-1', 'Argentina');
-    const playerB = new Player('p2', 'Mbappé', 25, 'Forward', 'team-2', 'France');
+    const playerA = new Player('p1', 'Messi', 37, 'Forward', 'Argentina');
+    const playerB = new Player('p2', 'Mbappé', 25, 'Forward', 'France');
 
     expect(playerA.getId()).not.toBe(playerB.getId());
     expect(playerA.getName()).not.toBe(playerB.getName());

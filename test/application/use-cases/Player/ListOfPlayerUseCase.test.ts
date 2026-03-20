@@ -9,8 +9,8 @@ describe('ListOfPlayerUserCase', () => {
   let repository: IPlayerRepository;
   let useCase: ListOfPlayerUserCase;
 
-  const playerA = new Player('p1', 'Messi', 37, 'Forward', 'team-1', 'Argentina');
-  const playerB = new Player('p2', 'Mbappé', 25, 'Forward', 'team-2', 'France');
+  const playerA = new Player('p1', 'Messi', 37, 'Forward', 'team-1',);
+  const playerB = new Player('p2', 'Mbappé', 25, 'Forward', 'team-2',);
 
   beforeEach(() => {
     mockFindAll = vi.fn<(filters?: IFilterPlayer) => Promise<Player[]>>();
@@ -18,6 +18,7 @@ describe('ListOfPlayerUserCase', () => {
     repository = {
       save: vi.fn(),
       findAll: mockFindAll,
+      assignToTeam: vi.fn(),
       update: vi.fn(),
       delete: vi.fn(),
       findByName: vi.fn(),

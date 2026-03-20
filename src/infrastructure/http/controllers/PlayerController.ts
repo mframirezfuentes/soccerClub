@@ -1,8 +1,13 @@
 import { Request, Response } from "express";
-import { ListOfPlayerUserCase } from "../../../application/use-cases/Player";
+import { v4 as uuidv4 } from "uuid";
+import { ListOfPlayerUserCase, CreatePlayerUseCase } from "../../../application/use-cases/Player";
+import { Player } from "../../../domain/entities/Player";
 
 export class PlayerController {
-    constructor(private readonly listAllPlayers: ListOfPlayerUserCase) { }
+    constructor(
+        private readonly listAllPlayers: ListOfPlayerUserCase,
+        private readonly createPlayer: CreatePlayerUseCase
+    ) { }
 
     async findAll(req: Request, res: Response): Promise<void> {
         try {
@@ -24,6 +29,15 @@ export class PlayerController {
 
     async save(req: Request, res: Response) {
         try {
+            const { name, age, position, country } = req.body;
+            const result = await this.listAllPlayers.execute({ name })
+            if (result.length > 0) {
+                res.status(400).json({ error: `This player ${name} already exist` })
+            }
+
+            const player = new Player(uuidv4(), name, age, position, country);
+            await this.createPlayer.execute(player);
+            res.status(201).json({ message: `This player ${name} was created successfly` })
 
         } catch (error) {
             res.status(500).json({ error: 'Internal server error' })

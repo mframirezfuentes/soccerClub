@@ -7,16 +7,14 @@ import { IPlayerRepository } from "../../domain/repositories/IPlayerRepository";
 export class Neo4jPlayerRepository implements IPlayerRepository {
     async save(player: Player): Promise<void> {
         const query = `
-            MATCH (t:Team {name: $teamId})
-            CREATE (p:Player {id: $id, name: $name, age: $age, position: $position, teamId: $teamId, country: $country})
-            CREATE (p)-[:PLAYS_FOR]->(t)
+            CREATE (p:Player {id: $id, name: $name, age: $age, position: $position, country: $country})
+            RETURN p;
         `;
         const params = {
             id: player.getId(),
             name: player.getName(),
             age: int(player.getAge()),
             position: player.getPosition(),
-            teamId: player.getTeamId(),
             country: player.getCountry()
         };
         await runQuery(query, params);
@@ -49,7 +47,6 @@ export class Neo4jPlayerRepository implements IPlayerRepository {
                 node.properties.name,
                 node.properties.age,
                 node.properties.position,
-                node.properties.teamId,
                 node.properties.country
             );
         });
@@ -70,9 +67,16 @@ export class Neo4jPlayerRepository implements IPlayerRepository {
             node.properties.name,
             node.properties.age.toInt(),
             node.properties.position,
-            node.properties.teamId,
             node.properties.country
         );
+    }
+    async assignToTeam(playerName: string, teamName: string, fromYear: number): Promise<void> {
+        const query = `MATCH(p:Player {name:$playerName})
+                    MATCH(t:Team {name:$teamName})
+                    CREATE (p)-[:PLAYS_FOR {fromYear:$fromYear}]->(t)`;
+
+
+        await runQuery(query, { playerName, teamName, fromYear })
     }
     async findByName(name: string): Promise<Player | null> {
         const query = `MATCH (p:Player {name: $name}) RETURN p`;
@@ -86,7 +90,6 @@ export class Neo4jPlayerRepository implements IPlayerRepository {
             node.properties.name,
             node.properties.age,
             node.properties.position,
-            node.properties.teamId,
             node.properties.country
         )
     }

@@ -2,7 +2,7 @@ import express from 'express'
 import { createRoutes } from '../http/routes';
 import { Neo4jTeamRepository, Neo4jPlayerRepository } from '../persistence/index';
 import { CreateTeamUseCase, ListTeamsUseCase, DeleteTeamUseCase, UpdateTeamUseCase, FindByIdTeamUseCase } from '../../application/use-cases/Team';
-import { ListOfPlayerUserCase } from '../../application/use-cases/Player';
+import { ListOfPlayerUserCase, CreatePlayerUseCase } from '../../application/use-cases/Player';
 import { TeamController } from '../http/controllers/TeamController';
 import { PlayerController } from '../http/controllers';
 
@@ -26,13 +26,14 @@ export const createApp = () => {
 
     //caso de uso players
     const listPlayersUseCase = new ListOfPlayerUserCase(playerRepository);
+    const createPlayerUseCase = new CreatePlayerUseCase(playerRepository)
 
     //Controllers
     const teamController = new TeamController(createTeamUseCase,
         listTeamsUseCase, findByIdTeamUseCase,
         deleteTeamUseCase, updateTeamUseCase
     );
-    const playerController = new PlayerController(listPlayersUseCase);
+    const playerController = new PlayerController(listPlayersUseCase, createPlayerUseCase);
 
     //routes
     app.use('/api/v1', createRoutes({ teamController, playerController }));

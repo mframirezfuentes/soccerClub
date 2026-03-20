@@ -13,7 +13,14 @@ async function main() {
     let failed = 0;
     let skipped = 0;
 
-    for (const playerData of playersData) {
+    // ✅ Eliminar duplicados por nombre — crear cada jugadora solo una vez
+    const uniquePlayers = playersData.filter(
+        (player, index, self) => index === self.findIndex(p => p.name === player.name)
+    );
+
+    console.log(`\n👤 Creating ${uniquePlayers.length} unique players...`);
+
+    for (const playerData of uniquePlayers) {
         try {
             const exists = await playerRepository.findByName(playerData.name);
             if (exists) {
@@ -22,16 +29,15 @@ async function main() {
                 continue;
             }
 
-            const player = new Player(uuidv4(), playerData.name, playerData.age, playerData.position, playerData.teamId, playerData.country);
+            const player = new Player(uuidv4(), playerData.name, playerData.age, playerData.position, playerData.country);
             await playerRepository.save(player);
-            // ✅ Verify the player was actually saved in Neo4j
+
             const saved = await playerRepository.findByName(playerData.name);
             if (saved) {
                 console.log(`  ✅ ${playerData.name} saved and verified`);
                 success++;
             } else {
-                // Saved without error but not found — likely a MATCH issue (teamId, etc.)
-                console.warn(`  ⚠️  ${playerData.name} — no error but not found in Neo4j. Check teamId: "${playerData.teamId}"`);
+                console.warn(`  ⚠️  ${playerData.name} — saved without error but not found in Neo4j`);
                 failed++;
             }
         } catch (error) {
@@ -40,19 +46,25 @@ async function main() {
         }
     }
 
+    // ✅ Crear TODAS las relaciones — incluyendo duplicados (historial)
+    console.log(`\n🔗 Creating ${playersData.length} team relationships...`);
+
+    for (const playerData of playersData) {
+        try {
+            await playerRepository.assignToTeam(playerData.name, playerData.teamName, playerData.from);
+            console.log(`  ✅ ${playerData.name} → ${playerData.teamName} (from ${playerData.from})`);
+        } catch (error) {
+            console.error(`  ❌ Failed to assign ${playerData.name} to ${playerData.teamName}:`, error);
+        }
+    }
+
     // Summary
     console.log(`\n📊 Summary:`);
-    console.log(`  Saved:    ${success}`);
-    console.log(`  Skipped:  ${skipped}`);
-    console.log(`  Failed:   ${failed}`);
+    console.log(`  Players saved:    ${success}`);
+    console.log(`  Players skipped:  ${skipped}`);
+    console.log(`  Players failed:   ${failed}`);
 
-
-    // Always close the driver to avoid hanging processes
     await closeDriver();
     process.exit(0);
 }
-
-main().catch(error => {
-    console.error("Error loading players:", error);
-    process.exit(1);
-});
+main()
