@@ -9,19 +9,19 @@ interface IPlayerData {
 
 // Crear un nuevo jugador
 export const playersData: IPlayerData[] = [
-    // Arsenal
-    { name: "Leah Williamson", age: 27, position: "Defender", teamName: "Arsenal", country: "England", from: 2014 },
-    { name: "Kim Little", age: 34, position: "Midfielder", teamName: "Arsenal", country: "Scotland", from: 2017 },
-    { name: "Alessia Russo", age: 25, position: "Forward", teamName: "Arsenal", country: "England", from: 2023 },
-    { name: "Emily Fox", age: 26, position: "Defender", teamName: "Arsenal", country: "USA", from: 2023 },
-    { name: "Chloe Kelly", age: 27, position: "Forward", teamName: "Arsenal", country: "England", from: 2025 },
-    { name: "Vivianne Miedema", age: 28, position: "Forward", teamName: "Arsenal", country: "Netherlands", from: 2017 },
+    //Arsenal
+    { name: "Leah Williamson", age: 27, position: "Defender", teamName: "Arsenal Women's", country: "England", from: 2014 },
+    { name: "Kim Little", age: 34, position: "Midfielder", teamName: "Arsenal Women's", country: "Scotland", from: 2017 },
+    { name: "Alessia Russo", age: 25, position: "Forward", teamName: "Arsenal Women's", country: "England", from: 2023 },
+    { name: "Emily Fox", age: 26, position: "Defender", teamName: "Arsenal Women's", country: "USA", from: 2023 },
+    { name: "Chloe Kelly", age: 27, position: "Forward", teamName: "Arsenal Women's", country: "England", from: 2025 },
+    { name: "Vivianne Miedema", age: 28, position: "Forward", teamName: "Arsenal Women's", country: "Netherlands", from: 2017 },
 
     // Chelsea
-    { name: "Millie Bright", age: 31, position: "Defender", teamName: "Chelsea", country: "England", from: 2015 },
-    { name: "Lucy Bronze", age: 33, position: "Defender", teamName: "Chelsea", country: "England", from: 2023 },
-    { name: "Niamh Charles", age: 25, position: "Midfielder", teamName: "Chelsea", country: "England", from: 2020 },
-    { name: "Kadidiatou Diani", age: 28, position: "Forward", teamName: "Chelsea", country: "France", from: 2024 },
+    { name: "Millie Bright", age: 31, position: "Defender", teamName: "Chelsea Women's", country: "England", from: 2015 },
+    { name: "Lucy Bronze", age: 33, position: "Defender", teamName: "Chelsea Women's", country: "England", from: 2023 },
+    { name: "Niamh Charles", age: 25, position: "Midfielder", teamName: "Chelsea Women's", country: "England", from: 2020 },
+    { name: "Kadidiatou Diani", age: 28, position: "Forward", teamName: "Chelsea Women's", country: "France", from: 2024 },
 
     // Manchester City
     { name: "Vivianne Miedema", age: 28, position: "Forward", teamName: "Manchester City", country: "Netherlands", from: 2024 },

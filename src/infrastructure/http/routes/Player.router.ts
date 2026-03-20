@@ -7,6 +7,7 @@ export const playerRouter = (controller: PlayerController): Router => {
 
     router.get('/', (req, res) => controller.findAll(req, res));
     router.post('/', (req, res) => controller.save(req, res));
+    router.post('/:id/assign', (req, res) => controller.assign(req, res));
     router.put('/:id', (req, res) => controller.update(req, res));
     router.delete('/:id', (req, res) => controller.delete(req, res));
 

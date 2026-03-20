@@ -7,14 +7,13 @@ export class AssignToTeamUseCase {
         private readonly teamRepository: ITeamRepository
     ) { }
 
-    async execute(playerId: string, teamId: string, fromYear: number): Promise<void> {
-
-        const player = await this.playerRepository.findByName(playerId);
+    async execute(playerId: string, teamId: string, fromYear?: number): Promise<void> {
+        const player = await this.playerRepository.findById(playerId);
         if (!player) throw new Error(`Player ${playerId} not found`);
 
         const team = await this.teamRepository.findById(teamId);
-        if (!team) throw new Error(`team ${teamId} not found`);
+        if (!team) throw new Error(`Team ${teamId} not found`);
 
-        await this.playerRepository.assignToTeam(playerId, team.getName(), fromYear);
+        await this.playerRepository.assignToTeam(playerId, teamId, fromYear);
     }
 }

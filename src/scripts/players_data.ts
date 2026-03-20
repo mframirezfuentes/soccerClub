@@ -1,10 +1,12 @@
 import { Player } from '../domain/entities/Player';
 import { Neo4jPlayerRepository } from '../infrastructure/persistence/Neo4jPlayerRepository';
+import { Neo4jTeamRepository } from '../infrastructure/persistence/Neo4jTeamRepository';
 import { closeDriver } from '../infrastructure/persistence/connection';
 import { v4 as uuidv4 } from 'uuid';
 import { playersData } from './data/players';
 
 const playerRepository = new Neo4jPlayerRepository();
+const teamRepository = new Neo4jTeamRepository();
 
 async function main() {
     console.log(`⚽ Loading ${playersData.length} players...`);
@@ -46,12 +48,24 @@ async function main() {
         }
     }
 
-    // ✅ Crear TODAS las relaciones — incluyendo duplicados (historial)
+    // ✅ Crear TODAS las relaciones — buscar IDs por nombre
     console.log(`\n🔗 Creating ${playersData.length} team relationships...`);
 
     for (const playerData of playersData) {
         try {
-            await playerRepository.assignToTeam(playerData.name, playerData.teamName, playerData.from);
+            const player = await playerRepository.findByName(playerData.name);
+            if (!player) {
+                console.warn(`  ⚠️  Player not found: ${playerData.name}, skipping...`);
+                continue;
+            }
+
+            const teams = await teamRepository.findAll({ name: playerData.teamName });
+            if (teams.length === 0) {
+                console.warn(`  ⚠️  Team not found: ${playerData.teamName}, skipping...`);
+                continue;
+            }
+
+            await playerRepository.assignToTeam(player.getId(), teams[0].getId(), playerData.from);
             console.log(`  ✅ ${playerData.name} → ${playerData.teamName} (from ${playerData.from})`);
         } catch (error) {
             console.error(`  ❌ Failed to assign ${playerData.name} to ${playerData.teamName}:`, error);

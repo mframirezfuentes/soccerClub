@@ -18,36 +18,48 @@ export class Neo4jPlayerRepository implements IPlayerRepository {
             country: player.getCountry()
         };
         await runQuery(query, params);
-
     }
 
     async findAll(filters: IFilterPlayer): Promise<Player[]> {
-        console.log("Filters received:", JSON.stringify(filters))
-        const validEntries = Object.entries(filters)
-            .filter(([_, value]) => value !== undefined)
+        const { teamId, ...playerFilters } = filters;
+
+        const validEntries = Object.entries(playerFilters)
+            .filter(([_, value]) => value !== undefined);
+
         const conditions = validEntries
             .map(([key, _]) => `p.${key} = $${key}`)
             .join(' AND ');
 
-        const params = Object.fromEntries(
+        const params: Record<string, unknown> = Object.fromEntries(
             validEntries.map(([key, value]) => [key, key === 'age' ? int(value as number) : value])
-        )
+        );
+
+        if (teamId) params.teamId = teamId;
 
         const query = `
             MATCH (p:Player)
+            ${teamId ? 'MATCH (p)-[:PLAYS_FOR]->(ft:Team {id: $teamId})' : ''}
             ${conditions ? `WHERE ${conditions}` : ''}
-            RETURN p
+            OPTIONAL MATCH (p)-[r:PLAYS_FOR]->(t:Team)
+            WITH p, COLLECT({ teamId: t.id, fromYear: r.fromYear }) AS teams
+            RETURN p, teams
+            ORDER BY p.name ASC
         `;
 
         const result = await runQuery(query, params);
         return result.records.map(record => {
             const node = record.get('p');
+            const teams: Array<{ teamId: string; fromYear: number }> = record.get('teams');
+            const teamIds = teams
+                .filter(t => t.teamId != null)
+                .map(t => t.teamId);
             return new Player(
                 node.properties.id,
                 node.properties.name,
-                node.properties.age,
+                node.properties.age.toInt(),
                 node.properties.position,
-                node.properties.country
+                node.properties.country,
+                teamIds
             );
         });
     }
@@ -58,9 +70,7 @@ export class Neo4jPlayerRepository implements IPlayerRepository {
             RETURN p
         `;
         const result = await runQuery(query, { id });
-        if (result.records.length === 0) {
-            return null;
-        }
+        if (result.records.length === 0) return null;
         const node = result.records[0].get('p');
         return new Player(
             node.properties.id,
@@ -70,20 +80,21 @@ export class Neo4jPlayerRepository implements IPlayerRepository {
             node.properties.country
         );
     }
-    async assignToTeam(playerName: string, teamName: string, fromYear: number): Promise<void> {
-        const query = `MATCH(p:Player {name:$playerName})
-                    MATCH(t:Team {name:$teamName})
-                    CREATE (p)-[:PLAYS_FOR {fromYear:$fromYear}]->(t)`;
 
-
-        await runQuery(query, { playerName, teamName, fromYear })
+    async assignToTeam(playerId: string, teamId: string, fromYear?: number): Promise<void> {
+        const query = `
+            MATCH (p:Player {id: $playerId})
+            MATCH (t:Team {id: $teamId})
+            MERGE (p)-[r:PLAYS_FOR]->(t)
+            SET r.fromYear = $fromYear
+        `;
+        await runQuery(query, { playerId, teamId, fromYear: fromYear ?? null });
     }
+
     async findByName(name: string): Promise<Player | null> {
         const query = `MATCH (p:Player {name: $name}) RETURN p`;
-        const result = await runQuery(query, { name })
-        if (result.records.length === 0) {
-            return null;
-        }
+        const result = await runQuery(query, { name });
+        if (result.records.length === 0) return null;
         const node = result.records[0].get('p');
         return new Player(
             node.properties.id,
@@ -91,17 +102,15 @@ export class Neo4jPlayerRepository implements IPlayerRepository {
             node.properties.age,
             node.properties.position,
             node.properties.country
-        )
+        );
     }
-
 
     async update(id: string, player: Player): Promise<void> {
 
     }
 
-    async delete(name: string): Promise<void> {
-        const query = `MATCH (p:Player {name:$name})  DETACH DELETE p`
-        await runQuery(query, { name })
-
+    async delete(idOrName: string): Promise<void> {
+        const query = `MATCH (p:Player) WHERE p.id = $idOrName OR p.name = $idOrName DETACH DELETE p`
+        await runQuery(query, { idOrName });
     }
 };
